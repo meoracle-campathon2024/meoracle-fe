@@ -7,9 +7,9 @@ import { useDropzone, type DropzoneOptions } from 'react-dropzone';
 import { twMerge } from 'tailwind-merge';
 
 const variants = {
-    base: 'relative rounded-md aspect-square flex justify-center items-center flex-col cursor-pointer min-h-[150px] min-w-[200px] border border-dashed border-gray-400 dark:border-gray-300 transition-colors duration-200 ease-in-out',
+    base: 'relative rounded-md flex justify-center items-center flex-col cursor-pointer min-h-[150px] min-w-[200px] border border-dashed border-gray-400 dark:border-gray-300 transition-colors duration-200 ease-in-out',
     image:
-        'border-0 p-0 w-full h-full relative shadow-md bg-slate-200 dark:bg-slate-900 rounded-md',
+        'max-w-[150px] border-0 p-0 w-full h-full relative shadow-md bg-slate-200 dark:bg-slate-900 rounded-md',
     active: 'border-2',
     disabled:
         'bg-gray-200 border-gray-300 cursor-default pointer-events-none bg-opacity-30 dark:bg-gray-700',
@@ -166,9 +166,9 @@ const MultiImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
                     )}
 
                     {/* Images */}
-                    <div className={"flex"}>
+                    <div className={"flex gap-2 flex-wrap mt-5"}>
                         {value?.map(({ file, progress }, index) => (
-                            <div key={index} className={variants.image + ' aspect-square'}>
+                            <div key={index} className={variants.image}>
                                 <img
                                     className="h-full w-full rounded-md object-cover"
                                     src={imageUrls[index]}
@@ -191,7 +191,7 @@ const MultiImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
                                     >
                                         <div className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border border-solid border-gray-500 bg-white transition-all duration-300 hover:h-6 hover:w-6 dark:border-gray-400 dark:bg-black">
                                             <X
-                                                className="text-gray-500 dark:text-gray-400"
+                                                className="text-red-500 dark:text-gray-400"
                                                 width={16}
                                                 height={16}
                                             />

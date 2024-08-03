@@ -1,6 +1,6 @@
 'use client';
 
-import { BASE_API_URL } from "@/config/api";
+import { API, BASE_API_URL } from "@/config/api";
 import { createContext, useContext, useEffect, useState } from "react";
 
 type Auth = {
@@ -28,7 +28,7 @@ export function AuthProvider({ csrfToken, children } : {
     const [auth, setAuth] = useState({ authenticated: false } as Auth);
 
     useEffect(() => {
-        fetch(`${BASE_API_URL}/api/auth/anonymous`, {
+        fetch(`${API.AUTH.anonymous}`, {
             method: 'GET',
             headers: {
                 'x-csrf-token': csrfToken,

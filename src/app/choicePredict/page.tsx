@@ -11,12 +11,26 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import { Disease } from "@/interfaces/Disease";
 import { choicePredict } from "@/utils/backend";
+import { API } from "@/config/api";
+import axios from "axios";
+import useSWR from "swr";
+import Box from '@mui/material/Box';
+import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
+import { TreeItem } from '@mui/x-tree-view/TreeItem';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const ChoicePredict = () => {
     const [dieases, setDieases] = React.useState<Disease[]>([]);
+
+    const { data: symtoms, error: errorGetSymtoms } = useSWR<any[], Error>(
+        API.CLASSIFICATION.symtoms,
+        async (url: string) => {
+            const res = await axios.get(url, { withCredentials: true });
+            return res.data;
+        }
+    );
 
     const predict = async () => {
         const result = await choicePredict();
