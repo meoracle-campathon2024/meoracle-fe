@@ -17,6 +17,7 @@ export default function MultiImageDropzoneUsage() {
 
     const [fileStates, setFileStates] = useState<FileState[]>([]);
     const [alertQueryIsEmpty, setAlertQueryIsEmpty] = React.useState<boolean>(false);
+    const [predicting, setPredicting] = React.useState<boolean>(false);
 
     const updateFileProgress = useCallback((key: string, progress: FileState['progress']) => {
         setFileStates((fileStates) => {
@@ -34,7 +35,11 @@ export default function MultiImageDropzoneUsage() {
     const [dieases, setDieases] = React.useState<Disease[]>([]);
 
     const predict = useCallback(async (uploadedFilePaths: string[]) => {
+        setDieases([])
+        setPredicting(true)
         const result = await imagePredict(uploadedFilePaths)
+
+        setPredicting(false)
         setDieases(result)
     }, [setDieases]);
 
@@ -87,7 +92,7 @@ export default function MultiImageDropzoneUsage() {
                     setFileStates([...fileStates, ...addedFiles]);
                 }}
             />
-            <PredictButton onClick={onPredictButtonClick}>
+            <PredictButton onClick={onPredictButtonClick} predicting={predicting}>
                 Predict
             </PredictButton>
             <ListDieases dieases={dieases} />

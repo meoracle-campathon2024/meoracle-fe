@@ -14,9 +14,7 @@ import { choicePredict } from "@/utils/backend";
 import { API } from "@/config/api";
 import axios from "axios";
 import useSWR from "swr";
-import Box from '@mui/material/Box';
-import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
-import { TreeItem } from '@mui/x-tree-view/TreeItem';
+import Image from "next/image";
 import { Alert, Snackbar } from "@mui/material";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -25,6 +23,7 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 const ChoicePredict = () => {
     const [dieases, setDieases] = React.useState<Disease[]>([]);
     const [alertQueryIsEmpty, setAlertQueryIsEmpty] = React.useState<boolean>(false);
+    const [predicting, setPredicting] = React.useState<boolean>(false);
 
     const { data: symtoms, error: errorGetSymtoms } = useSWR<any[], Error>(
         API.CLASSIFICATION.symtoms,
@@ -35,13 +34,28 @@ const ChoicePredict = () => {
     );
 
     const predict = async () => {
+        setDieases([]);
+        setPredicting(false)
+
         const result = await choicePredict();
+
         setDieases(result);
+        setPredicting(true)
     };
 
     return (
         <>
             <PageTitle title={"CHOICE PREDICT"} />
+            <div className="flex items-center max-w-[500px]">
+                <Image
+                    src="/choicePredict.png"
+                    width={250}
+                    height={250}
+                    className="mb-2 max-w-[100px]"
+                    alt=""
+                />
+                "Pick your symptoms, and I'll guess what might be wrong!"
+            </div>
             <Autocomplete
                 multiple
                 id="checkboxes-tags-demo"
@@ -67,7 +81,7 @@ const ChoicePredict = () => {
                     <TextField {...params} label="Symtoms" placeholder="Your symtoms" />
                 )}
             />
-            <PredictButton onClick={predict} />
+            <PredictButton onClick={predict} predicting={predicting}/>
             <ListDieases dieases={dieases} />
 
             <Snackbar open={alertQueryIsEmpty} autoHideDuration={1000} anchorOrigin={{
@@ -79,7 +93,7 @@ const ChoicePredict = () => {
                     variant="filled"
                     sx={{ width: '100%' }}
                 >
-                Please choose symtoms
+                    Please choose symtoms
                 </Alert>
             </Snackbar >
         </>

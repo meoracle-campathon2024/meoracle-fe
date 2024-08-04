@@ -44,7 +44,6 @@ export function AppLayout({ children } : {children: any}) {
     if ([
         "/login",
         "/register",
-        "/",
     ].includes(pathname)) {
         return children
     }
