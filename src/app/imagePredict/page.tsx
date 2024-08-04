@@ -46,12 +46,12 @@ export default function MultiImageDropzoneUsage() {
         const uploadedFilePaths = await Promise.all(
             fileStates.map(async (addedFileState) => {
                 const addedFile = addedFileState.file;
-                const fileObjectUrl = URL.createObjectURL(addedFile);
                 for (;;) {
                     try {
-                        const { filePath } = await uploadImageFile(auth.user, fileObjectUrl);
+                        const { filePath } = await uploadImageFile(auth.user, addedFile);
                         return filePath;
                     } catch (err) {
+                        console.log(err);
                         updateFileProgress(addedFileState.key, 'ERROR');
                         await new Promise(resolve => setTimeout(() => resolve(null), 1000));
                         continue;
