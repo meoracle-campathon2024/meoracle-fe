@@ -1,6 +1,7 @@
 export const PATH = {
     LOGIN: '/login',
     REGISTER: '/register',
+    HOME: '/home',
     CHOICE_PREDICT: '/choicePredict',
     IMAGE_PREDICT: '/imagePredict',
     NLP_PREDICT: '/nlpPredict',

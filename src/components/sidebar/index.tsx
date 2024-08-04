@@ -13,14 +13,16 @@ function signOut() {
     // TODO
 }
 
-const Sidebar = ({ className }: {className?: string}) => {
+const Sidebar = ({ className }: { className?: string }) => {
     return (
         <div className={clsx("flex flex-col top-0 left-0 bg-white h-full", className)}>
             <div className="flex items-center justify-center h-14 border-b gap-2">
-                <PetsIcon />
-                <div>
-                    Meoracle
-                </div>
+                <Link href={PATH.HOME} underline="none" color="inherit" className="relative flex gap-2 flex-row items-center h-11 focus:outline-none pr-6">
+                    <PetsIcon />
+                    <div>
+                        Meoracle
+                    </div>
+                </Link>
             </div>
             <div className="overflow-y-auto overflow-x-hidden flex-grow">
                 <ul className="flex flex-col py-4 space-y-1">

@@ -17,12 +17,14 @@ import useSWR from "swr";
 import Box from '@mui/material/Box';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
+import { Alert, Snackbar } from "@mui/material";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const ChoicePredict = () => {
     const [dieases, setDieases] = React.useState<Disease[]>([]);
+    const [alertQueryIsEmpty, setAlertQueryIsEmpty] = React.useState<boolean>(false);
 
     const { data: symtoms, error: errorGetSymtoms } = useSWR<any[], Error>(
         API.CLASSIFICATION.symtoms,
@@ -67,6 +69,19 @@ const ChoicePredict = () => {
             />
             <PredictButton onClick={predict} />
             <ListDieases dieases={dieases} />
+
+            <Snackbar open={alertQueryIsEmpty} autoHideDuration={1000} anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'center'
+            }}>
+                <Alert
+                    severity="error"
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                Please choose symtoms
+                </Alert>
+            </Snackbar >
         </>
     );
 };

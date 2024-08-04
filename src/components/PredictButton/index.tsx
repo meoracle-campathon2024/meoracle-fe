@@ -1,11 +1,11 @@
-import { Fab } from '@mui/material';
 import Button from '@mui/material/Button';
-import { NavigationIcon } from 'lucide-react';
 
 
 const PredictButton = ({ ...props }) => {
     return (
-        <Button size="large" {...props} className="uppercase text-lg tracking-wider mt-5">PREDICT</Button>
+        <button className="mt-2 tracking-wider bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" {...props}>
+            PREDICT
+        </button>
     )
 }
 

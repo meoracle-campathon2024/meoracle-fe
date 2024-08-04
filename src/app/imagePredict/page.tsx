@@ -10,11 +10,13 @@ import { Disease } from '@/interfaces/Disease';
 import { imagePredict } from '@/utils/backend';
 import { uploadImageFile } from '@/utils/uploadImage';
 import { useAuth } from '@/providers/AuthProvider';
+import { Alert, Snackbar } from '@mui/material';
 
 export default function MultiImageDropzoneUsage() {
     const auth = useAuth();
 
     const [fileStates, setFileStates] = useState<FileState[]>([]);
+    const [alertQueryIsEmpty, setAlertQueryIsEmpty] = React.useState<boolean>(false);
 
     const updateFileProgress = useCallback((key: string, progress: FileState['progress']) => {
         setFileStates((fileStates) => {
@@ -32,16 +34,22 @@ export default function MultiImageDropzoneUsage() {
     const [dieases, setDieases] = React.useState<Disease[]>([]);
 
     const predict = useCallback(async (uploadedFilePaths: string[]) => {
-        ///////////////////////////////////////////
-        // TODO: adjust imagePredict() to accept uploadedFilePaths and forward to server
-        // await imagePredict({ uploadedFilePaths });
-        ///////////////////////////////////////////
-        const result = await imagePredict()
+        const result = await imagePredict(uploadedFilePaths)
         setDieases(result)
     }, [setDieases]);
 
     const onPredictButtonClick = useCallback(async () => {
-        if (!auth.authenticated) return;
+        setDieases([])
+
+        if (!auth.authenticated) {
+            return;
+        };
+
+        if (!fileStates.length) {
+            setAlertQueryIsEmpty(true)
+            return;
+        }
+        setAlertQueryIsEmpty(false)
 
         const uploadedFilePaths = await Promise.all(
             fileStates.map(async (addedFileState) => {
@@ -66,13 +74,8 @@ export default function MultiImageDropzoneUsage() {
     return (
         <>
             <PageTitle title={"IMAGE PREDICT"} />
-            {
-                auth.authenticated
-                ? <p>You are authenticated with ID={auth.user.id}</p>
-                : <p>NOT AUTHENTICATED, error: {auth.error || "null"}</p>
-            }
             <MultiImageDropzone
-                className='max-w-[500px] mx-auto'
+                className='max-w-[500px]'
                 value={fileStates}
                 dropzoneOptions={{
                     maxFiles: 100,
@@ -84,10 +87,23 @@ export default function MultiImageDropzoneUsage() {
                     setFileStates([...fileStates, ...addedFiles]);
                 }}
             />
-            <PredictButton onClick={() => onPredictButtonClick()}>
+            <PredictButton onClick={onPredictButtonClick}>
                 Predict
             </PredictButton>
             <ListDieases dieases={dieases} />
+
+            <Snackbar open={alertQueryIsEmpty} autoHideDuration={100} anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'center'
+            }}>
+                <Alert
+                    severity="error"
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    Please upload images to predict
+                </Alert>
+            </Snackbar >
         </>
     );
 }

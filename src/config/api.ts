@@ -10,7 +10,17 @@ const CLASSIFICATION = {
     symtoms: `${BASE_API_URL}/api/classification/symptom-groups`
 }
 
+const IMAGE = {
+    predict: `${BASE_API_URL}/api/image/query`
+}
+
+const NLP = {
+    predict: `${BASE_API_URL}/api/nlp/query`
+}
+
 export const API = {
     AUTH,
-    CLASSIFICATION
+    CLASSIFICATION,
+    IMAGE,
+    NLP
 }

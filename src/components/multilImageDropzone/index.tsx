@@ -166,7 +166,7 @@ const MultiImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
                     )}
 
                     {/* Images */}
-                    <div className={"flex gap-2 flex-wrap mt-5"}>
+                    <div className={"flex gap-2 flex-wrap mt-2"}>
                         {value?.map(({ file, progress }, index) => (
                             <div key={index} className={variants.image}>
                                 <img

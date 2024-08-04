@@ -1,20 +1,18 @@
 import { PATH } from "@/config/path";
-import { Button, List, ListItem, ListItemIcon, ListItemText, Pagination } from "@mui/material";
+import { Button, CircularProgress, List, ListItem, ListItemIcon, ListItemText, Pagination } from "@mui/material";
 import CoronavirusIcon from '@mui/icons-material/Coronavirus';
 import { Disease } from "@/interfaces/Disease";
 
-const ListDieases = ({ dieases }: { dieases: Disease[] }) => {
+const ListDieases = ({ dieases, loading }: { dieases: Disease[]}) => {
     if (!dieases.length) {
         return
     }
-
-    const predictID = 1
 
     return (
         <div className="mt-5">
             <div className="flex justify-between justify-items-center">
                 <h1 className="font-bold">TOP DISEASES</h1>
-                <Button href={PATH.MAKE_APPOINTMENT(predictID)}>MAKE APPOINTMENT</Button>
+                <Button href={PATH.MAKE_APPOINTMENT(dieases.id)}>MAKE APPOINTMENT</Button>
             </div>
 
             <List>
