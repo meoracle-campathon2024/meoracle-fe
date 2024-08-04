@@ -1,61 +1,98 @@
 'use client';
 
 import { API, BASE_API_URL } from "@/config/api";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 
-type Auth = {
-    authenticated: false,
-} | ({
-    authenticated: true,
+export type Account = {
+    // TODO
+    name: string,
+    email: string,
+}
+
+export type User = {
     id: number,
-} & ({
     account_id: null,
 } | {
+    id: number,
     account_id: number,
-        account: {
-            // TODO
-            name: string,
-            email: string,
-        },
-}));
+    account: Account,
+};
 
-const AuthContext = createContext({ authenticated: false } as Auth);
+export type Auth = {
+    authenticated: false,
+    error: string | null,
+} | {
+    authenticated: true,
+    user: User,
+};
 
-export function AuthProvider({ csrfToken, children } : {
+const AuthContext = createContext({ authenticated: false, error: null } satisfies Auth as Auth);
+
+export function AuthProvider({ csrfToken, children }: {
     csrfToken: string,
     children: React.ReactNode,
 }) {
-    const [auth, setAuth] = useState({ authenticated: false } as Auth);
+    const [auth, setAuth] = useState({ authenticated: false, error: null } satisfies Auth as Auth);
 
+    const alreadyAuthenticated = useRef<boolean>(false);
     useEffect(() => {
+        if (alreadyAuthenticated.current) {
+            return;
+        }
+
         fetch(`${API.AUTH.anonymous}`, {
             method: 'GET',
             headers: {
                 'x-csrf-token': csrfToken,
             },
             credentials: 'include',
-        }).then(res => res.json().then(data => [res.status, data] as const).catch(e => [res.status, e] as const))
-        .then(([status, data]) => {
-            if (status === 200) {
-                const { id, account_id } = data;
+        })
+            .then(async res => {
+                const status = res.status;
+                const data = await res.json();
 
-                if (account_id === null) {
+                if (status === 200) {
+                    const { id, account } = data;
+
+                    if (account === null) {
+                        setAuth({
+                            authenticated: true,
+                            user: {
+                                id,
+                                account_id: null,
+                            },
+                        });
+                    } else if (typeof account === 'object') {
+                        const { id, name, email } = data.account;
+                        setAuth({
+                            authenticated: true,
+                            user: {
+                                id,
+                                account_id: id,
+                                account: { name, email },
+                            },
+                        });
+                    } else {
+                        throw new Error("unknown account data");
+                    }
+                } else {
+                    const e = data;
                     setAuth({
-                        authenticated: true,
-                        id,
-                        account_id,
-                    });
-                } else if (typeof account_id === 'number') {
-                    const { name, email } = data.account;
-                    setAuth({
-                        authenticated: true,
-                        id,
-                        account_id,
-                        account: { name, email },
+                        authenticated: false,
+                        error: e?.message || ("" + e),
                     });
                 }
-            }
-        }).catch(e => { throw e; });
+            })
+            .catch(e => {
+                setAuth({
+                    authenticated: false,
+                    error: "" + e,
+                });
+            });
+
+        return () => {
+            alreadyAuthenticated.current = true;
+        }
     }, []);
 
     return <AuthContext.Provider value={auth}>
