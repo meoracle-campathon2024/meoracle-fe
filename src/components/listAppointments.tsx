@@ -15,7 +15,7 @@ const ListAppointMents = ({ appointments = [] }: { appointments: Appointment[] }
                         <ListItemIcon>
                             <FeedIcon />
                         </ListItemIcon>
-                        <ListItemText primary={appointment.department_name} secondary={appointment.created_at} />
+                        <ListItemText primary={appointment.department_name} secondary={(new Date(appointment.created_at)).toLocaleString()} />
                     </ListItem>
                 ))}
             </List>

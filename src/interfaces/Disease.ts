@@ -1,5 +1,5 @@
 export interface Disease {
-    id?: number,
+    id: number,
     disease_name: string, 
-    created_at?: string,
+    created_at: number,
 }

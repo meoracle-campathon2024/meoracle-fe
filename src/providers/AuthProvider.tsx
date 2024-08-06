@@ -29,7 +29,7 @@ export type Auth = {
 const AuthContext = createContext({ authenticated: false, error: null } satisfies Auth as Auth);
 
 export function AuthProvider({ csrfToken, children }: {
-    csrfToken: string,
+    csrfToken: Readonly<string>,
     children: React.ReactNode,
 }) {
     const [auth, setAuth] = useState({ authenticated: false, error: null } satisfies Auth as Auth);

@@ -12,7 +12,7 @@ const ListDieases = ({ dieases = []}: { dieases: Disease[] }) => {
         <div className="mt-5">
             <div className="flex justify-between justify-items-center">
                 <h1 className="font-bold">TOP DISEASES</h1>
-                <Button href={PATH.MAKE_APPOINTMENT(dieases.id)}>MAKE APPOINTMENT</Button>
+                <Button href={PATH.MAKE_APPOINTMENT()}>MAKE APPOINTMENT</Button>
             </div>
 
             <List>

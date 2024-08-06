@@ -43,7 +43,7 @@ const Home: NextPage = () => {
                     className="mb-2 max-w-[100px]"
                     alt=""
                 />
-                Describe your symptoms, and I'll try to predict what{"'"}s ailing you!
+                <p>{"Describe your symptoms, and I'll try to predict what's ailing you!"}</p>
             </div>
             <div>
                 <TextField fullWidth multiline rows={4} id="outlined-basic" label="Describe your symtoms" variant="outlined"

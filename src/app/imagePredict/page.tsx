@@ -31,7 +31,7 @@ export default function MultiImageDropzoneUsage() {
             }
             return newFileStates;
         });
-    }, [fileStates, setFileStates]);
+    }, [setFileStates]);
 
     const [dieases, setDieases] = React.useState<Disease[]>([]);
 
@@ -83,7 +83,7 @@ export default function MultiImageDropzoneUsage() {
 
         predict(uploadedFilePaths);
         setPredicting(false)
-    }, [auth, fileStates, updateFileProgress]);
+    }, [auth, fileStates, updateFileProgress, predict]);
 
     return (
         <>
@@ -96,7 +96,7 @@ export default function MultiImageDropzoneUsage() {
                     className="mb-2 max-w-[100px]"
                     alt=""
                 />
-                {'"'}Send me an image of your symptoms, and I'll try to figure out what might be wrong!{'"'}
+                <p>{"Send me an image of your symptoms, and I'll try to figure out what might be wrong!"}</p>
             </div>
             <MultiImageDropzone
                 className='max-w-[500px]'

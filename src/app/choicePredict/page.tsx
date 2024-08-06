@@ -146,7 +146,7 @@ export default function ChoiceSelector() {
                 className="mb-2 max-w-[100px]"
                 alt=""
             />
-            {'"'}Choose symtoms you have , and I'll try to figure out what might be wrong!{'"'}
+            <p>{"Choose symtoms you have, and I'll try to figure out what might be wrong!"}</p>
         </div>
         <div>
             {

@@ -16,7 +16,7 @@ import Image from "next/image";
 
 const PredictionDetail = () => {
     const params = useParams()
-    const [prediction, setPredction] = useState<Prediction>()
+    const [prediction, setPrediction] = useState<Prediction>()
     const { data: predictions, error: errorGetPredictions, isLoading } = useSWR<Prediction[], Error>(
         API.OTHERS.listPredictions,
         async (url: string) => {
@@ -27,9 +27,9 @@ const PredictionDetail = () => {
 
     useEffect(() => {
         if (predictions) {
-            setPredction(predictions.filter(p => p.id == params.id)[0])
+            setPrediction(predictions.filter(p => p.id === +params.id)[0])
         }
-    }, [predictions])
+    }, [predictions, params])
 
     if (!prediction) {
         return
@@ -39,9 +39,9 @@ const PredictionDetail = () => {
         if (prediction.model_name == "classification") {
             return (
                 <div className="flex flex-wrap gap-2">
-                    {prediction.selected_symptoms.map((index:number, symtom: Symtom) => (
-                        <span key={index} className={classNames("rounded-lg p-2 border-2 mr-2")}>
-                            {symtom.name}
+                    {prediction.selected_symptoms.map((symptom, key) => (
+                        <span key={key} className={classNames("rounded-lg p-2 border-2 mr-2")}>
+                            {symptom.name}
                         </span>
                     ))}
                 </div>
@@ -55,8 +55,8 @@ const PredictionDetail = () => {
             console.log({prediction})
             return (
                 <div className="flex flex-wrap gap-2">
-                    {prediction.uploaded_images.map((img: string) =>
-                        <Image className="rounded-lg" src={img.file_path} alt="" width={100} height={100}/>
+                    {prediction.uploaded_images.map((img, key) =>
+                        <Image key={key} className="rounded-lg" src={img.file_path} alt="" width={100} height={100}/>
                     )}
                 </div>
             )
@@ -72,12 +72,12 @@ const PredictionDetail = () => {
             {Detail(prediction)}
             <p className="mt-5 font-bold">Predict Result:</p>
             <List>
-                {prediction.results.map((diease: Disease, key: number) => (
+                {prediction.results.map((disease, key) => (
                     <ListItem key={key} disablePadding className={"hover:bg-gray-200 p-2"}>
                         <ListItemIcon>
                             <CoronavirusIcon />
                         </ListItemIcon>
-                        <ListItemText primary={diease.disease_name} />
+                        <ListItemText primary={disease.disease_name} />
                     </ListItem>
                 ))}
             </List>
