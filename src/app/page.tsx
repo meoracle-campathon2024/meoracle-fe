@@ -6,7 +6,7 @@ import Image from "next/image";
 const Home: NextPage = () => {
     return (
         <>
-            <PageTitle title={"HELLO!!! WE ARE MEOMEDICINE"} />
+            <PageTitle title={"HELLO!!! WE ARE MEODICINE"} />
             <Image
                 src="/catHome.png"
                 width={300}
