@@ -20,16 +20,19 @@ const Home: NextPage = () => {
         setDieases([])
         setPredicting(true)
 
-        if (!query.trim()) {
-            setAlertQueryIsEmpty(true)
-            setPredicting(false)
-            return
-        }
-        setAlertQueryIsEmpty(false)
+        try {
+            if (!query.trim()) {
+                setAlertQueryIsEmpty(true)
+                setPredicting(false)
+                return
+            }
+            setAlertQueryIsEmpty(false)
 
-        const result = await nlpPredict(query)
-        setDieases(result)
-        setPredicting(false)
+            const result = await nlpPredict(query)
+            setDieases(result)
+        } finally {
+            setPredicting(false)
+        }
     }
 
     return (

@@ -126,14 +126,17 @@ export default function ChoiceSelector() {
         setDieases([])
         setPredicting(true)
 
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/classification/query`, {
-            selected_classification_symptom_ids: selected_ids,
-        }, {
-            withCredentials: true,
-        });
+        try {
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/classification/query`, {
+                selected_classification_symptom_ids: selected_ids,
+            }, {
+                withCredentials: true,
+            });
 
-        setDieases(res.data)
-        setPredicting(false)
+            setDieases(res.data)
+        } finally {
+            setPredicting(false)
+        }
     }, []);
 
     return <>

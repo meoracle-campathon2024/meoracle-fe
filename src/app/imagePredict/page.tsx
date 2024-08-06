@@ -48,41 +48,44 @@ export default function MultiImageDropzoneUsage() {
         setDieases([])
         setPredicting(true)
 
-        if (!auth.authenticated) {
-            console.log("unauthenticated")
-            setPredicting(false)
-            return;
-        };
+        try {
+            if (!auth.authenticated) {
+                console.log("unauthenticated")
+                setPredicting(false)
+                return;
+            };
 
-        if (!fileStates.length) {
-            console.log("empty file")
-            setAlertQueryIsEmpty(true)
-            setPredicting(false)
-            return;
-        }
-        setAlertQueryIsEmpty(false)
+            if (!fileStates.length) {
+                console.log("empty file")
+                setAlertQueryIsEmpty(true)
+                setPredicting(false)
+                return;
+            }
+            setAlertQueryIsEmpty(false)
 
-        console.log("uploading")
-        const uploadedFilePaths = await Promise.all(
-            fileStates.map(async (addedFileState) => {
-                const addedFile = addedFileState.file;
-                for (; ;) {
-                    try {
-                        const { filePath } = await uploadImageFile(auth.user, addedFile);
-                        return filePath;
-                    } catch (err) {
-                        console.log(err);
-                        updateFileProgress(addedFileState.key, 'ERROR');
-                        await new Promise(resolve => setTimeout(() => resolve(null), 1000));
-                        continue;
+            console.log("uploading")
+            const uploadedFilePaths = await Promise.all(
+                fileStates.map(async (addedFileState) => {
+                    const addedFile = addedFileState.file;
+                    for (; ;) {
+                        try {
+                            const { filePath } = await uploadImageFile(auth.user, addedFile);
+                            return filePath;
+                        } catch (err) {
+                            console.log(err);
+                            updateFileProgress(addedFileState.key, 'ERROR');
+                            await new Promise(resolve => setTimeout(() => resolve(null), 1000));
+                            continue;
+                        }
                     }
-                }
-            }),
-        );
-        console.log("uploaded")
+                }),
+            );
+            console.log("uploaded")
 
-        predict(uploadedFilePaths);
-        setPredicting(false)
+            await predict(uploadedFilePaths);
+        } finally {
+            setPredicting(false);
+        }
     }, [auth, fileStates, updateFileProgress, predict]);
 
     return (
