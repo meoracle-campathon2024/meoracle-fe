@@ -10,6 +10,8 @@
     "test": "echo 'NO TESTS SPECIFIED'"
   },
   "dependencies": {
+    "@capacitor/android": "^6.1.1",
+    "@capacitor/core": "^6.1.1",
     "@emotion/cache": "^11.13.1",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
@@ -19,6 +21,7 @@
     "@mui/x-tree-view": "^7.12.0",
     "@types/mime-types": "^2.1.4",
     "axios": "^1.7.3",
+    "classnames": "^2.5.1",
     "fast-jwt": "^4.0.2",
     "firebase": "^10.12.5",
     "lucide-react": "^0.424.0",
@@ -32,6 +35,7 @@
     "tailwind-merge": "^2.4.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "^6.1.1",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

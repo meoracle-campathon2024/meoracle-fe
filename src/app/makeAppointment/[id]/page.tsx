@@ -1,4 +1,3 @@
-import type { NextPage } from "next";
 import PageTitle from "@/components/PageTitle/PageTitle";
 
 const MakeAppointment = ({ params: { id } } : {

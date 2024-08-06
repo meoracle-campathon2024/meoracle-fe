@@ -11,6 +11,7 @@ import { imagePredict } from '@/utils/backend';
 import { uploadImageFile } from '@/utils/uploadImage';
 import { useAuth } from '@/providers/AuthProvider';
 import { Alert, Snackbar } from '@mui/material';
+import Image from 'next/image';
 
 export default function MultiImageDropzoneUsage() {
     const auth = useAuth();
@@ -45,21 +46,27 @@ export default function MultiImageDropzoneUsage() {
 
     const onPredictButtonClick = useCallback(async () => {
         setDieases([])
+        setPredicting(true)
 
         if (!auth.authenticated) {
+            console.log("unauthenticated")
+            setPredicting(false)
             return;
         };
 
         if (!fileStates.length) {
+            console.log("empty file")
             setAlertQueryIsEmpty(true)
+            setPredicting(false)
             return;
         }
         setAlertQueryIsEmpty(false)
 
+        console.log("uploading")
         const uploadedFilePaths = await Promise.all(
             fileStates.map(async (addedFileState) => {
                 const addedFile = addedFileState.file;
-                for (;;) {
+                for (; ;) {
                     try {
                         const { filePath } = await uploadImageFile(auth.user, addedFile);
                         return filePath;
@@ -72,13 +79,25 @@ export default function MultiImageDropzoneUsage() {
                 }
             }),
         );
+        console.log("uploaded")
 
         predict(uploadedFilePaths);
+        setPredicting(false)
     }, [auth, fileStates, updateFileProgress]);
 
     return (
         <>
             <PageTitle title={"IMAGE PREDICT"} />
+            <div className="flex items-center max-w-[500px]">
+                <Image
+                    src="/imagePredict.png"
+                    width={250}
+                    height={250}
+                    className="mb-2 max-w-[100px]"
+                    alt=""
+                />
+                {'"'}Send me an image of your symptoms, and I'll try to figure out what might be wrong!{'"'}
+            </div>
             <MultiImageDropzone
                 className='max-w-[500px]'
                 value={fileStates}

@@ -3,7 +3,7 @@ import { Button, CircularProgress, List, ListItem, ListItemIcon, ListItemText, P
 import CoronavirusIcon from '@mui/icons-material/Coronavirus';
 import { Disease } from "@/interfaces/Disease";
 
-const ListDieases = ({ dieases, loading }: { dieases: Disease[]}) => {
+const ListDieases = ({ dieases = []}: { dieases: Disease[] }) => {
     if (!dieases.length) {
         return
     }
@@ -21,7 +21,7 @@ const ListDieases = ({ dieases, loading }: { dieases: Disease[]}) => {
                         <ListItemIcon>
                             <CoronavirusIcon />
                         </ListItemIcon>
-                        <ListItemText primary={diease.disease_name} secondary={diease.created_at} />
+                        <ListItemText primary={diease.disease_name}/>
                     </ListItem>
                 ))}
             </List>

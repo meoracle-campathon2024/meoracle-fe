@@ -1,154 +1,161 @@
 'use client';
 
-import ListDieases from "@/components/listDiseases";
-import PredictButton from "@/components/PredictButton";
-import PageTitle from "@/components/PageTitle/PageTitle";
-import * as React from 'react';
-import Checkbox from '@mui/material/Checkbox';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import { Disease } from "@/interfaces/Disease";
-import { choicePredict } from "@/utils/backend";
-import { API } from "@/config/api";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import classNames from 'classnames';
 import axios from "axios";
-import useSWR from "swr";
+import PredictButton from "@/components/PredictButton";
+import ListDieases from "@/components/listDiseases";
+import PageTitle from "@/components/PageTitle";
 import Image from "next/image";
-import { Alert, Snackbar } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
-
-const ChoicePredict = () => {
-    const [dieases, setDieases] = React.useState<Disease[]>([]);
-    const [alertQueryIsEmpty, setAlertQueryIsEmpty] = React.useState<boolean>(false);
-    const [predicting, setPredicting] = React.useState<boolean>(false);
-
-    const { data: symtoms, error: errorGetSymtoms } = useSWR<any[], Error>(
-        API.CLASSIFICATION.symtoms,
-        async (url: string) => {
-            const res = await axios.get(url, { withCredentials: true });
-            return res.data;
-        }
-    );
-
-    const predict = async () => {
-        setDieases([]);
-        setPredicting(false)
-
-        const result = await choicePredict();
-
-        setDieases(result);
-        setPredicting(true)
-    };
-
-    return (
-        <>
-            <PageTitle title={"CHOICE PREDICT"} />
-            <div className="flex items-center max-w-[500px]">
-                <Image
-                    src="/choicePredict.png"
-                    width={250}
-                    height={250}
-                    className="mb-2 max-w-[100px]"
-                    alt=""
-                />
-                "Pick your symptoms, and I'll guess what might be wrong!"
-            </div>
-            <Autocomplete
-                multiple
-                id="checkboxes-tags-demo"
-                options={top100Films}
-                disableCloseOnSelect
-                getOptionLabel={(option) => option.title}
-                renderOption={(props, option, { selected }) => {
-                    const { key, ...optionProps } = props;
-                    return (
-                        <li key={key} {...optionProps}>
-                            <Checkbox
-                                icon={icon}
-                                checkedIcon={checkedIcon}
-                                style={{ marginRight: 8 }}
-                                checked={selected}
-                            />
-                            {option.title}
-                        </li>
-                    );
-                }}
-                style={{ width: 500 }}
-                renderInput={(params) => (
-                    <TextField {...params} label="Symtoms" placeholder="Your symtoms" />
-                )}
-            />
-            <PredictButton onClick={predict} predicting={predicting}/>
-            <ListDieases dieases={dieases} />
-
-            <Snackbar open={alertQueryIsEmpty} autoHideDuration={1000} anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'center'
-            }}>
-                <Alert
-                    severity="error"
-                    variant="filled"
-                    sx={{ width: '100%' }}
-                >
-                    Please choose symtoms
-                </Alert>
-            </Snackbar >
-        </>
-    );
+type Symptom = {
+    id: number;
+    name: string;
+    vector_index: number;
+    classification_symptom_group_id: number;
 };
 
-const top100Films = [
-    { title: 'The Shawshank Redemption', year: 1994 },
-    { title: 'The Godfather', year: 1972 },
-    { title: 'The Godfather: Part II', year: 1974 },
-    { title: 'The Dark Knight', year: 2008 },
-    { title: '12 Angry Men', year: 1957 },
-    { title: "Schindler's List", year: 1993 },
-    { title: 'Pulp Fiction', year: 1994 },
-    {
-        title: 'The Lord of the Rings: The Return of the King',
-        year: 2003,
-    },
-    { title: 'The Good, the Bad and the Ugly', year: 1966 },
-    { title: 'Fight Club', year: 1999 },
-    {
-        title: 'The Lord of the Rings: The Fellowship of the Ring',
-        year: 2001,
-    },
-    {
-        title: 'Star Wars: Episode V - The Empire Strikes Back',
-        year: 1980,
-    },
-    { title: 'Forrest Gump', year: 1994 },
-    { title: 'Inception', year: 2010 },
-    {
-        title: 'The Lord of the Rings: The Two Towers',
-        year: 2002,
-    },
-    { title: "One Flew Over the Cuckoo's Nest", year: 1975 },
-    { title: 'Goodfellas', year: 1990 },
-    { title: 'The Matrix', year: 1999 },
-    { title: 'Seven Samurai', year: 1954 },
-    {
-        title: 'Star Wars: Episode IV - A New Hope',
-        year: 1977,
-    },
-    { title: 'City of God', year: 2002 },
-    { title: 'Se7en', year: 1995 },
-    { title: 'The Silence of the Lambs', year: 1991 },
-    { title: "It's a Wonderful Life", year: 1946 },
-    { title: 'Life Is Beautiful', year: 1997 },
-    { title: 'The Usual Suspects', year: 1995 },
-    { title: 'Léon: The Professional', year: 1994 },
-    { title: 'Spirited Away', year: 2001 },
-    { title: 'Saving Private Ryan', year: 1998 },
-    { title: 'Once Upon a Time in the West', year: 1968 },
-    { title: 'American History X', year: 1998 },
-    { title: 'Interstellar', year: 2014 },
-    { title: 'đầu', year: 2014 },
-];
+type SymptomGroupWithChildren = {
+    id: number;
+    parent_id: number | null;
+    name: string;
+    tier: number;
+    symptoms: Symptom[];
+    subgroups: SymptomGroupWithChildren[];
+};
 
-export default ChoicePredict;
+function Choice({ key, symptom, listIdsSelected, setSelected }: {
+    key: React.Key,
+    symptom: Symptom,
+    listIdsSelected: number[],
+    setSelected: (id: number, selected: boolean) => any,
+}) {
+    const meSelected: boolean = useMemo(() => {
+        return listIdsSelected.includes(symptom.id);
+    }, [symptom, listIdsSelected]);
+
+    return <button key={key} className={classNames("rounded-lg mb-2 p-2 border-2 mr-2", meSelected ? "font-bold bg-blue-100" : null)} onClick={() => setSelected(symptom.id, !meSelected)}>
+        {symptom.name}
+    </button>;
+}
+
+function ChoiceGroup({ key, symptomGroup, listIdsSelected, setSelected }: {
+    key: React.Key,
+    symptomGroup: SymptomGroupWithChildren,
+    listIdsSelected: number[],
+    setSelected: (id: number, selected: boolean) => any,
+}) {
+    console.log({ symptomGroup })
+    return (
+        <Accordion>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel2-content"
+                id="panel2-header"
+            >
+                <h2 className="font-bold mb-2">{symptomGroup.name}</h2>
+            </AccordionSummary>
+            <AccordionDetails>
+                <div className="flex flex-wrap gap-2">
+                    {
+                        symptomGroup.symptoms.map((symptom, key) => {
+                            return <Choice symptom={symptom} key={key} listIdsSelected={listIdsSelected} setSelected={setSelected} />;
+                        })
+                    }
+                </div>
+                <br />
+                <div className="">
+                    {
+                        symptomGroup.subgroups.map((group, key) => {
+                            return <ChoiceGroup key={key} symptomGroup={group} listIdsSelected={listIdsSelected} setSelected={setSelected} />;
+                        })
+                    }
+                </div>
+            </AccordionDetails>
+        </Accordion>)
+}
+
+export default function ChoiceSelector() {
+    const [symptomGroups, setSymptomGroups] = useState([] as SymptomGroupWithChildren[]);
+    const [selectedChoiceIds, setSelectedChoiceIds] = useState([] as number[]);
+    const [dieases, setDieases] = useState([]);
+    const [predicting, setPredicting] = useState(false);
+
+    useEffect(() => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/classification/symptom-groups`, {
+            method: 'GET',
+            credentials: 'include',
+        }).then(async res => {
+            const status = res.status;
+            const data = await res.json();
+            if (status !== 200) {
+                throw new Error(`server returned ${status}, error ${data?.message || "" + data}`);
+            }
+            const symptomGroups_ = data as SymptomGroupWithChildren[];
+            setSymptomGroups(symptomGroups_);
+        }).catch(e => {
+            throw e;
+        });
+    }, []);
+
+    // const findSymptomById = useCallback((id: number, rootGroup: SymptomGroupWithChildren|null = null): Symptom|null => {
+    //     let groupsToScan;
+    //     if (rootGroup === null) {
+    //         groupsToScan = symptomGroups;
+    //     } else {
+    //         groupsToScan = rootGroup.subgroups;
+    //     }
+    //     for (const group of groupsToScan) {
+    //         const symptom = findSymptomById(id, group);
+    //         if (symptom !== null) return symptom;
+    //     }
+    //     return null;
+    // }, [symptomGroups]);
+
+    const setSelected = useCallback((id: number, selected: boolean) => {
+        if (selected === false) {
+            setSelectedChoiceIds(selectedChoiceIds => selectedChoiceIds.filter(choiceId => choiceId !== id));
+        } else {
+            setSelectedChoiceIds(selectedChoiceIds => [...selectedChoiceIds, id]);
+        }
+    }, [setSelectedChoiceIds]);
+
+    const callClassificationModel = useCallback(async (selected_ids: number[]) => {
+        setDieases([])
+        setPredicting(true)
+
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/classification/query`, {
+            selected_classification_symptom_ids: selected_ids,
+        }, {
+            withCredentials: true,
+        });
+
+        setDieases(res.data)
+        setPredicting(false)
+    }, []);
+
+    return <>
+        <PageTitle title={"Symtoms Predict"} />
+        <div className="flex items-center max-w-[500px]">
+            <Image
+                src="/choicePredict.png"
+                width={250}
+                height={250}
+                className="mb-2 max-w-[100px]"
+                alt=""
+            />
+            {'"'}Choose symtoms you have , and I'll try to figure out what might be wrong!{'"'}
+        </div>
+        <div>
+            {
+                symptomGroups ? (symptomGroups.map((group, key) => {
+                    return <ChoiceGroup key={key} symptomGroup={group} listIdsSelected={selectedChoiceIds} setSelected={setSelected} />
+                })) : (<span>Loading...</span>)
+            }
+        </div>
+        <PredictButton onClick={() => callClassificationModel(selectedChoiceIds)} predicting={predicting}>Predict</PredictButton>
+        <ListDieases dieases={dieases} />
+    </>;
+}

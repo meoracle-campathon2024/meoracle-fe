@@ -8,7 +8,7 @@ const Appointments: NextPage = () => {
     return (
         <>
             <PageTitle title={"APPOINTMENTS"}/>
-            <ListAppointMents />
+            <ListAppointMents appointments={[]} />
         </>
     );
 };

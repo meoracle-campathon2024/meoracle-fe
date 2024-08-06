@@ -25,7 +25,7 @@ export async function choicePredict(): Promise<Disease[]> {
 }
 
 export async function imagePredict(uploadedFilePaths:string[]): Promise<Disease[]> {
-    const res = await axios.post(API.IMAGE.predict, {uploadedFilePaths}, {withCredentials: true}) 
+    const res = await axios.post(API.IMAGE.predict, {uploaded_file_paths: uploadedFilePaths}, {withCredentials: true}) 
     return res.data 
 }
 

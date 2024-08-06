@@ -11,16 +11,21 @@ const CLASSIFICATION = {
 }
 
 const IMAGE = {
-    predict: `${BASE_API_URL}/api/image/query`
+    predict: `${BASE_API_URL}/api/image-model/query`
 }
 
 const NLP = {
     predict: `${BASE_API_URL}/api/nlp/query`
 }
 
+const OTHERS = {
+    listPredictions: `${BASE_API_URL}/api/queries`
+}
+
 export const API = {
     AUTH,
     CLASSIFICATION,
     IMAGE,
-    NLP
+    NLP,
+    OTHERS
 }

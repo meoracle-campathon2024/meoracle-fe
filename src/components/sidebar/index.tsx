@@ -31,7 +31,7 @@ const Sidebar = ({ className }: { className?: string }) => {
                             <span className="inline-flex justify-center items-center ml-4">
                                 <ExploreIcon />
                             </span>
-                            <span className="ml-2 text-sm tracking-wide truncate">Choice Predict</span>
+                            <span className="ml-2 text-sm tracking-wide truncate">Symtoms Predict</span>
                         </Link>
                     </li>
                     <li>

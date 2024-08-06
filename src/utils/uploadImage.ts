@@ -5,7 +5,7 @@ import { User } from "@/providers/AuthProvider";
 import { initializeApp } from "firebase/app";
 import mime from "mime-types";
 import { getAuth, signInWithCustomToken, signOut } from "firebase/auth";
-import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 const firebaseApp = initializeApp({
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_CLOUD_STORAGE_API_KEY,
@@ -68,10 +68,10 @@ export async function uploadImageFile(user: User, localFile: File): Promise<{
     const fileRef = ref(getStorage(), filePath);
 
     const result = await uploadBytes(fileRef, localFile);
-    // const downloadUrl = await getDownloadURL(result.ref);
-    // console.log(`downloadUrl=${downloadUrl}`);
+    const downloadUrl = await getDownloadURL(result.ref);
+    console.log(`downloadUrl=${downloadUrl}`);
     signOut(firebaseAuth);
     return {
-        filePath,
+        filePath: downloadUrl,
     };
 }

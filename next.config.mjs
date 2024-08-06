@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
+    swcMinify: true,
+	images: {
+		unoptimized: true
+	},
     env: {
         FRONTEND_SECRET: process.env.FRONTEND_SECRET,
         NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,

@@ -1,25 +1,9 @@
 import { PATH } from "@/config/path"
 import { Button, List, ListItem, ListItemIcon, ListItemText, Pagination } from "@mui/material"
 import FeedIcon from '@mui/icons-material/Feed';
+import { Appointment } from "@/interfaces/Appointment";
 
-const ListAppointMents = () => {
-    const appointments = [
-        {
-            id: 11,
-            created_at: "11/11/2011",
-            department_name: "rang ham mat"
-        },
-        {
-            id: 11,
-            created_at: "11/11/2011",
-            department_name: "rang ham mat"
-        },
-        {
-            id: 11,
-            created_at: "11/11/2011",
-            department_name: "rang ham mat"
-        },
-    ]
+const ListAppointMents = ({ appointments = [] }: { appointments: Appointment[] }) => {
     return (
         <>
             <h3>{appointments.length} appointments</h3>
@@ -35,7 +19,7 @@ const ListAppointMents = () => {
                     </ListItem>
                 ))}
             </List>
-            <Pagination count={10} className="w-max mx-auto mt-5" />
+            <Pagination count={2} className="w-max mx-auto mt-5" />
         </>
 
     )
