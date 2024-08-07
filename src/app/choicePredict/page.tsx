@@ -1,13 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import classNames from 'classnames';
 import axios from "axios";
 import PredictButton from "@/components/PredictButton";
 import ListDieases from "@/components/listDiseases";
 import PageTitle from "@/components/PageTitle";
 import Image from "next/image";
-import { Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Alert, Snackbar, Typography } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useAuth } from "@/providers/AuthProvider";
 
@@ -84,6 +84,22 @@ export default function ChoiceSelector() {
     const [selectedChoiceIds, setSelectedChoiceIds] = useState([] as number[]);
     const [dieases, setDieases] = useState([]);
     const [predicting, setPredicting] = useState(false);
+    const [displayedError, _real_setDisplayedError] = useState("");
+
+    const displayedErrorFadeTimeout = useRef<NodeJS.Timeout | null>(null);
+    const setDisplayedError = useCallback((newValue: string) => {
+        _real_setDisplayedError(newValue);
+
+        if (null !== displayedErrorFadeTimeout.current) {
+            clearTimeout(displayedErrorFadeTimeout.current);
+        }
+
+        if (newValue === "") return;
+
+        displayedErrorFadeTimeout.current = setTimeout(() => {
+            _real_setDisplayedError("");
+        }, 3000);
+    }, [_real_setDisplayedError]);
 
     useEffect(() => {
         if (!auth.authenticated) return;
@@ -129,8 +145,14 @@ export default function ChoiceSelector() {
     const callClassificationModel = useCallback(async (selected_ids: number[]) => {
         setDieases([])
         setPredicting(true)
+        setDisplayedError("");
 
         try {
+            if (selectedChoiceIds.length === 0) {
+                setDisplayedError("No symptoms selected!");
+                return;
+            }
+
             const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/classification/query`, {
                 selected_classification_symptom_ids: selected_ids,
             }, {
@@ -163,6 +185,21 @@ export default function ChoiceSelector() {
             }
         </div>
         <PredictButton onClick={() => callClassificationModel(selectedChoiceIds)} predicting={predicting} isHidden={!auth.authenticated}>Predict</PredictButton>
+
+        <Snackbar open={Boolean(displayedError)} autoHideDuration={100} anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'center'
+        }}>
+            <Alert
+                severity="error"
+                variant="filled"
+                sx={{ width: '100%' }}
+            >
+                {displayedError || ""}
+            </Alert>
+        </Snackbar >
+
+
         <ListDieases dieases={dieases} />
     </>;
 }
