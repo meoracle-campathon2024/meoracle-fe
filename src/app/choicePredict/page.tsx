@@ -163,7 +163,7 @@ export default function ChoiceSelector() {
         } finally {
             setPredicting(false)
         }
-    }, []);
+    }, [selectedChoiceIds, setDieases, setPredicting, setDisplayedError]);
 
     return <>
         <PageTitle title={"Symtoms Predict"} />

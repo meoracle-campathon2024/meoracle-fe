@@ -42,7 +42,7 @@ export default function MultiImageDropzoneUsage() {
 
         setPredicting(false)
         setDieases(result)
-    }, [setDieases]);
+    }, [setDieases, setPredicting]);
 
     const onPredictButtonClick = useCallback(async () => {
         setDieases([])
@@ -86,7 +86,7 @@ export default function MultiImageDropzoneUsage() {
         } finally {
             setPredicting(false);
         }
-    }, [auth, fileStates, updateFileProgress, predict]);
+    }, [auth, fileStates, updateFileProgress, predict, setDieases, setPredicting, setAlertQueryIsEmpty, updateFileProgress]);
 
     return (
         <>
