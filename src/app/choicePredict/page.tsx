@@ -9,6 +9,7 @@ import PageTitle from "@/components/PageTitle";
 import Image from "next/image";
 import { Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useAuth } from "@/providers/AuthProvider";
 
 type Symptom = {
     id: number;
@@ -78,12 +79,15 @@ function ChoiceGroup({ key, symptomGroup, listIdsSelected, setSelected }: {
 }
 
 export default function ChoiceSelector() {
+    const auth = useAuth();
     const [symptomGroups, setSymptomGroups] = useState([] as SymptomGroupWithChildren[]);
     const [selectedChoiceIds, setSelectedChoiceIds] = useState([] as number[]);
     const [dieases, setDieases] = useState([]);
     const [predicting, setPredicting] = useState(false);
 
     useEffect(() => {
+        if (!auth.authenticated) return;
+
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/classification/symptom-groups`, {
             method: 'GET',
             credentials: 'include',
@@ -98,7 +102,7 @@ export default function ChoiceSelector() {
         }).catch(e => {
             throw e;
         });
-    }, []);
+    }, [auth]);
 
     // const findSymptomById = useCallback((id: number, rootGroup: SymptomGroupWithChildren|null = null): Symptom|null => {
     //     let groupsToScan;
@@ -158,7 +162,7 @@ export default function ChoiceSelector() {
                 })) : (<span>Loading...</span>)
             }
         </div>
-        <PredictButton onClick={() => callClassificationModel(selectedChoiceIds)} predicting={predicting}>Predict</PredictButton>
+        <PredictButton onClick={() => callClassificationModel(selectedChoiceIds)} predicting={predicting} isHidden={!auth.authenticated}>Predict</PredictButton>
         <ListDieases dieases={dieases} />
     </>;
 }

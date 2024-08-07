@@ -1,6 +1,6 @@
 'use client';
 
-import React from "react";
+import React, { useCallback } from "react";
 import ListDieases from "@/components/listDiseases";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import PredictButton from "@/components/PredictButton";
@@ -9,14 +9,16 @@ import type { NextPage } from "next";
 import { Disease } from "@/interfaces/Disease";
 import { nlpPredict } from "@/utils/backend";
 import Image from "next/image";
+import { useAuth } from "@/providers/AuthProvider";
 
-const Home: NextPage = () => {
+const NlpPredict: NextPage = () => {
+    const auth = useAuth();
     const [dieases, setDieases] = React.useState<Disease[]>([]);
     const [query, setQuery] = React.useState<string>("");
     const [alertQueryIsEmpty, setAlertQueryIsEmpty] = React.useState<boolean>(false);
     const [predicting, setPredicting] = React.useState<boolean>(false);
 
-    const predict = async () => {
+    const predict = useCallback(async () => {
         setDieases([])
         setPredicting(true)
 
@@ -33,7 +35,7 @@ const Home: NextPage = () => {
         } finally {
             setPredicting(false)
         }
-    }
+    }, [setDieases, setPredicting, setAlertQueryIsEmpty]);
 
     return (
         <>
@@ -54,7 +56,7 @@ const Home: NextPage = () => {
                     onChange={(e) => setQuery(e.target.value)}
                 />
             </div>
-            <PredictButton onClick={predict} predicting={predicting}/>
+            <PredictButton onClick={predict} predicting={predicting} isHidden={!auth.authenticated} />
             <ListDieases dieases={dieases} />
             <Snackbar open={alertQueryIsEmpty} autoHideDuration={100} anchorOrigin={{
                 vertical: 'top',
@@ -72,4 +74,4 @@ const Home: NextPage = () => {
     );
 };
 
-export default Home;
+export default NlpPredict;

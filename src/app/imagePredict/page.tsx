@@ -114,7 +114,7 @@ export default function MultiImageDropzoneUsage() {
                     setFileStates([...fileStates, ...addedFiles]);
                 }}
             />
-            <PredictButton onClick={onPredictButtonClick} predicting={predicting}>
+            <PredictButton onClick={onPredictButtonClick} predicting={predicting} isHidden={!auth.authenticated}>
                 Predict
             </PredictButton>
             <ListDieases dieases={dieases} />
