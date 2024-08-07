@@ -8,6 +8,7 @@ import { getAppointmentSuggestions, getCountries, getDivisions } from "@/utils/b
 import { Coordinates } from "@/interfaces/Coordinates";
 import { Country } from "@/interfaces/Country";
 import { Division } from "@/interfaces/Division";
+import { useRouter } from "next/navigation";
 
 function DivisionSelectInput({ division, setLocation }: {
     division: Division,
@@ -224,6 +225,8 @@ function AppointmentSuggestionsDialog({ open, handleClose, queryDetail }: {
     handleClose: () => any,
     queryDetail: QueryDetail | null,
 }) {
+    const router = useRouter();
+
     const [appointmentSuggestions, setAppointmentSuggestions] = useState([] as AppointmentSuggestion[]);
 
     const [locationDialogOpen, setLocationDialogOpen] = useState(false);
@@ -256,7 +259,9 @@ function AppointmentSuggestionsDialog({ open, handleClose, queryDetail }: {
                     {
                         appointmentSuggestions.map((suggestion, key) => {
                             return <ListItem key={key}>
-                                <ListItemButton>
+                                <ListItemButton onClick={() => {
+                                    if (null !== queryDetail) router.push(PATH.MAKE_APPOINTMENT(suggestion.id, queryDetail.id))
+                                }}>
                                     <ListItemText primary={suggestion.name} secondary={
                                         <>
                                             <p className="text-base text-black">{suggestion.hospital.name}</p>

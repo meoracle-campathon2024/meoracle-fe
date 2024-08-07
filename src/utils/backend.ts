@@ -1,9 +1,12 @@
 'use client';
 
 import { API } from "@/config/api";
+import { Appointment } from "@/interfaces/Appointment";
 import { Coordinates } from "@/interfaces/Coordinates";
 import { Country } from "@/interfaces/Country";
+import { Department } from "@/interfaces/Department";
 import { Division } from "@/interfaces/Division";
+import { Prediction } from "@/interfaces/Prediction";
 import { PredictionResult } from "@/interfaces/PredictionResult";
 import { QueryDetail } from "@/interfaces/QueryDetail";
 import axios from "axios";
@@ -73,4 +76,62 @@ export async function getDivisions({ countryId } : {
         { withCredentials: true },
     );
     return res.data;
+}
+
+export async function getDepartmentById({ departmentId } : {
+    departmentId: number,
+}): Promise<Department> {
+    const res = await axios.get(
+        API.APPOINTMENTS.departments + `?department_id=${departmentId}`,
+        { withCredentials: true },
+    );
+    return (res.data as Department[])[0];
+}
+
+export async function getQueryDetailById({ queryDetailId } : {
+    queryDetailId: number,
+}): Promise<Prediction> {
+    const res = await axios.get(
+        API.QUERIES.getById(queryDetailId),
+        { withCredentials: true },
+    );
+    return (res.data as Prediction[])[0];
+}
+
+export async function makeAppointment({ departmentId, queryDetailId, note }: {
+    departmentId: number;
+    queryDetailId: number;
+    note: string;
+}): Promise<Appointment> {
+    const res = await axios.post(
+        API.APPOINTMENTS.make,
+        {
+            department_id: departmentId,
+            query_detail_id: queryDetailId,
+            note: note,
+        },
+        { withCredentials: true },
+    );
+
+    return res.data as Appointment;
+}
+
+export async function getAppointmentById({ appointmentId } : {
+    appointmentId: number,
+}): Promise<Appointment> {
+    const res = await axios.get(
+        API.APPOINTMENTS.getById(appointmentId),
+        { withCredentials: true },
+    );
+
+    return (res.data as Appointment[])[0];
+}
+
+export async function getAllAppointments(): Promise<Appointment[]> {
+    const res = await axios.get(
+        API.APPOINTMENTS.getAll,
+        { withCredentials: true },
+    );
+
+    return res.data as Appointment[];
 }

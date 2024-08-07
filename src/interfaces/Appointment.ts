@@ -1,5 +1,12 @@
-export interface Appointment {
-    id: number,
-    created_at: number,
-    department_name: string, 
-}
+import { Department } from "./Department";
+import { Prediction } from "./Prediction";
+
+export type Appointment = {
+    id: number;
+    note: string;
+    created_at: number;
+    scheduled_at: number,
+    user_id: number;
+    department: Department;
+    query_detail: Prediction;
+};

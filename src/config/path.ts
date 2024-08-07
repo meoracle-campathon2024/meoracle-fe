@@ -13,5 +13,5 @@ export const PATH = {
     DISEASE: (id: string|number) => `/disease/${id}`,
     APPOINTMENT: (id: string|number) => `${PATH.APPOINTMENTS}/${id}`,
     PREDICTION: (id: string|number) => `${PATH.PREDICT_HISTORY}/${id}`,
-    MAKE_APPOINTMENT: () => `/makeAppointment/`, // TODO
+    MAKE_APPOINTMENT: (departmentId: number, queryDetailId: number) => `/makeAppointment/${queryDetailId}/${departmentId}`,
 }

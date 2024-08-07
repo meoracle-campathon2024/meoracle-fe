@@ -1,5 +1,6 @@
 export type Prediction = {
     id: number;
+    user_id: number,
     created_at: number;
     results: {
         id: number;

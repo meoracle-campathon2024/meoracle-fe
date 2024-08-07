@@ -93,7 +93,7 @@ export function AuthProvider({ csrfToken, children }: {
         return () => {
             alreadyAuthenticated.current = true;
         }
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return <AuthContext.Provider value={auth}>
         {children}

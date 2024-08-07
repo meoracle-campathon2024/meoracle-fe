@@ -20,7 +20,15 @@ const NLP = {
 }
 
 const APPOINTMENTS = {
+    departments: `${BASE_API_URL}/api/departments`,
     suggestions: `${BASE_API_URL}/api/appointments/suggestions`,
+    make: `${BASE_API_URL}/api/appointments/`,
+    getById: (appointmentId: number|string) => `${BASE_API_URL}/api/appointments?appointment_id=${appointmentId}`,
+    getAll: `${BASE_API_URL}/api/appointments`,
+}
+
+const QUERIES = {
+    getById: (queryDetailId: number) => `${BASE_API_URL}/api/queries?query_detail_id=${queryDetailId}`,
 }
 
 const GEOGRAPHY = {
@@ -38,6 +46,7 @@ export const API = {
     IMAGE,
     NLP,
     APPOINTMENTS,
+    QUERIES,
     GEOGRAPHY,
     OTHERS
 }

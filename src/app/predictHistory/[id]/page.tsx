@@ -13,6 +13,7 @@ import CoronavirusIcon from '@mui/icons-material/Coronavirus';
 import { Symtom } from "@/interfaces/Symtom";
 import { Disease } from "@/interfaces/Disease";
 import Image from "next/image";
+import ListDieases from "@/components/listDiseases";
 
 const PredictionDetail = () => {
     const params = useParams()
@@ -70,7 +71,9 @@ const PredictionDetail = () => {
             <p><b>Detail:</b></p>
             {Detail(prediction)}
             <p className="mt-5 font-bold">Predict Result:</p>
-            <List>
+
+            <ListDieases dieases={prediction.results} queryDetail={prediction} />
+            {/* <List>
                 {prediction.results.map((disease, key) => (
                     <ListItem key={key} disablePadding className={"hover:bg-gray-200 p-2"}>
                         <ListItemIcon>
@@ -79,7 +82,7 @@ const PredictionDetail = () => {
                         <ListItemText primary={disease.disease_name} />
                     </ListItem>
                 ))}
-            </List>
+            </List> */}
         </div>
     )
 }
