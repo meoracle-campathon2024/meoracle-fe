@@ -35,7 +35,7 @@ const NlpPredict: NextPage = () => {
         } finally {
             setPredicting(false)
         }
-    }, [setDieases, setPredicting, setAlertQueryIsEmpty]);
+    }, [query, setDieases, setPredicting, setAlertQueryIsEmpty]);
 
     return (
         <>
