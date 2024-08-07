@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import ListDieases from "@/components/listDiseases";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import PredictButton from "@/components/PredictButton";
@@ -10,16 +10,20 @@ import { Disease } from "@/interfaces/Disease";
 import { nlpPredict } from "@/utils/backend";
 import Image from "next/image";
 import { useAuth } from "@/providers/AuthProvider";
+import { QueryDetail } from "@/interfaces/QueryDetail";
 
 const NlpPredict: NextPage = () => {
     const auth = useAuth();
-    const [dieases, setDieases] = React.useState<Disease[]>([]);
     const [query, setQuery] = React.useState<string>("");
     const [alertQueryIsEmpty, setAlertQueryIsEmpty] = React.useState<boolean>(false);
     const [predicting, setPredicting] = React.useState<boolean>(false);
 
+    const [dieases, setDieases] = React.useState<Disease[]>([]);
+    const [queryDetail, setQueryDetail] = useState<QueryDetail|null>(null);
+
     const predict = useCallback(async () => {
         setDieases([])
+        setQueryDetail(null);
         setPredicting(true)
 
         try {
@@ -30,8 +34,9 @@ const NlpPredict: NextPage = () => {
             }
             setAlertQueryIsEmpty(false)
 
-            const result = await nlpPredict(query)
-            setDieases(result)
+            const { query_detail, detected_diseases } = await nlpPredict(query);
+            setDieases(detected_diseases);
+            setQueryDetail({ ...query_detail });
         } finally {
             setPredicting(false)
         }
@@ -57,7 +62,7 @@ const NlpPredict: NextPage = () => {
                 />
             </div>
             <PredictButton onClick={predict} predicting={predicting} isHidden={!auth.authenticated} />
-            <ListDieases dieases={dieases} />
+            <ListDieases dieases={dieases} queryDetail={queryDetail} />
             <Snackbar open={alertQueryIsEmpty} autoHideDuration={100} anchorOrigin={{
                 vertical: 'top',
                 horizontal: 'center'

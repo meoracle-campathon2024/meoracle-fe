@@ -7,7 +7,8 @@ const AUTH = {
 }
 
 const CLASSIFICATION = {
-    symtoms: `${BASE_API_URL}/api/classification/symptom-groups`
+    symtoms: `${BASE_API_URL}/api/classification/symptom-groups`,
+    predict: `${BASE_API_URL}/api/classification/query`,
 }
 
 const IMAGE = {

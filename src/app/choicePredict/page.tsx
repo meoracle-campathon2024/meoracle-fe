@@ -10,6 +10,10 @@ import Image from "next/image";
 import { Accordion, AccordionDetails, AccordionSummary, Alert, Snackbar, Typography } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useAuth } from "@/providers/AuthProvider";
+import { QueryDetail } from "@/interfaces/QueryDetail";
+import { classificationPredict } from "@/utils/backend";
+import { Disease } from "@/interfaces/Disease";
+import { API } from "@/config/api";
 
 type Symptom = {
     id: number;
@@ -82,8 +86,11 @@ export default function ChoiceSelector() {
     const auth = useAuth();
     const [symptomGroups, setSymptomGroups] = useState([] as SymptomGroupWithChildren[]);
     const [selectedChoiceIds, setSelectedChoiceIds] = useState([] as number[]);
-    const [dieases, setDieases] = useState([]);
+
+    const [dieases, setDieases] = useState([] as Disease[]);
     const [predicting, setPredicting] = useState(false);
+    const [queryDetail, setQueryDetail] = useState<QueryDetail|null>(null);
+
     const [displayedError, _real_setDisplayedError] = useState("");
 
     const displayedErrorFadeTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -104,7 +111,7 @@ export default function ChoiceSelector() {
     useEffect(() => {
         if (!auth.authenticated) return;
 
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/classification/symptom-groups`, {
+        fetch(API.CLASSIFICATION.symtoms, {
             method: 'GET',
             credentials: 'include',
         }).then(async res => {
@@ -145,6 +152,7 @@ export default function ChoiceSelector() {
     const callClassificationModel = useCallback(async (selected_ids: number[]) => {
         setDieases([])
         setPredicting(true)
+        setQueryDetail(null);
         setDisplayedError("");
 
         try {
@@ -153,17 +161,13 @@ export default function ChoiceSelector() {
                 return;
             }
 
-            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/classification/query`, {
-                selected_classification_symptom_ids: selected_ids,
-            }, {
-                withCredentials: true,
-            });
-
-            setDieases(res.data)
+            const { query_detail, detected_diseases } = await classificationPredict(selectedChoiceIds);
+            setDieases(detected_diseases);
+            setQueryDetail({ ...query_detail });
         } finally {
             setPredicting(false)
         }
-    }, [selectedChoiceIds, setDieases, setPredicting, setDisplayedError]);
+    }, [selectedChoiceIds, setDieases, setPredicting, setDisplayedError, setQueryDetail]);
 
     return <>
         <PageTitle title={"Symtoms Predict"} />
@@ -200,6 +204,6 @@ export default function ChoiceSelector() {
         </Snackbar >
 
 
-        <ListDieases dieases={dieases} />
+        <ListDieases dieases={dieases} queryDetail={queryDetail} />
     </>;
 }

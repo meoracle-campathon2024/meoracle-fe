@@ -12,6 +12,7 @@ import { uploadImageFile } from '@/utils/uploadImage';
 import { useAuth } from '@/providers/AuthProvider';
 import { Alert, Snackbar } from '@mui/material';
 import Image from 'next/image';
+import { QueryDetail } from '@/interfaces/QueryDetail';
 
 export default function MultiImageDropzoneUsage() {
     const auth = useAuth();
@@ -34,15 +35,21 @@ export default function MultiImageDropzoneUsage() {
     }, [setFileStates]);
 
     const [dieases, setDieases] = React.useState<Disease[]>([]);
+    const [queryDetail, setQueryDetail] = useState<QueryDetail|null>(null);
 
     const predict = useCallback(async (uploadedFilePaths: string[]) => {
         setDieases([])
+        setQueryDetail(null);
         setPredicting(true)
-        const result = await imagePredict(uploadedFilePaths)
 
-        setPredicting(false)
-        setDieases(result)
-    }, [setDieases, setPredicting]);
+        try {
+            const { query_detail, detected_diseases } = await imagePredict(uploadedFilePaths);
+            setDieases(detected_diseases);
+            setQueryDetail({ ...query_detail });
+        } finally {
+            setPredicting(false);
+        }
+    }, [setDieases, setPredicting, setQueryDetail]);
 
     const onPredictButtonClick = useCallback(async () => {
         setDieases([])
@@ -117,7 +124,7 @@ export default function MultiImageDropzoneUsage() {
             <PredictButton onClick={onPredictButtonClick} predicting={predicting} isHidden={!auth.authenticated}>
                 Predict
             </PredictButton>
-            <ListDieases dieases={dieases} />
+            <ListDieases dieases={dieases} queryDetail={queryDetail} />
 
             <Snackbar open={alertQueryIsEmpty} autoHideDuration={100} anchorOrigin={{
                 vertical: 'top',

@@ -1,7 +1,7 @@
 'use client';
 
 import { API } from "@/config/api";
-import { Disease } from "@/interfaces/Disease"
+import { PredictionResult } from "@/interfaces/PredictionResult";
 import axios from "axios";
 
 // export async function choicePredict(): Promise<Disease[]> {
@@ -24,12 +24,21 @@ import axios from "axios";
 //     ]
 // }
 
-export async function imagePredict(uploadedFilePaths:string[]): Promise<Disease[]> {
+export async function classificationPredict(selectedSymptomsIds: number[]): Promise<PredictionResult> {
+    const res = await axios.post(API.CLASSIFICATION.predict, {
+        selected_classification_symptom_ids: selectedSymptomsIds,
+    }, {
+        withCredentials: true,
+    });
+    return res.data;
+}
+
+export async function imagePredict(uploadedFilePaths:string[]): Promise<PredictionResult> {
     const res = await axios.post(API.IMAGE.predict, {uploaded_file_paths: uploadedFilePaths}, {withCredentials: true}) 
     return res.data 
 }
 
-export async function nlpPredict(query: string): Promise<Disease[]> {
+export async function nlpPredict(query: string): Promise<PredictionResult> {
     const res = await axios.post(API.NLP.predict, {query_content: query}, {withCredentials: true})
     return res.data
 }
