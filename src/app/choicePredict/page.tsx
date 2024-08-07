@@ -52,7 +52,6 @@ function ChoiceGroup({ key, symptomGroup, listIdsSelected, setSelected }: {
     listIdsSelected: number[],
     setSelected: (id: number, selected: boolean) => any,
 }) {
-    console.log({ symptomGroup })
     return (
         <Accordion>
             <AccordionSummary

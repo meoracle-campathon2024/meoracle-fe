@@ -52,7 +52,6 @@ const PredictionDetail = () => {
         }
 
         if (prediction.model_name == "image") {
-            console.log({prediction})
             return (
                 <div className="flex flex-wrap gap-2">
                     {prediction.uploaded_images.map((img, key) =>

@@ -19,6 +19,15 @@ const NLP = {
     predict: `${BASE_API_URL}/api/nlp/query`
 }
 
+const APPOINTMENTS = {
+    suggestions: `${BASE_API_URL}/api/appointments/suggestions`,
+}
+
+const GEOGRAPHY = {
+    countries: `${BASE_API_URL}/api/countries`,
+    divisions: `${BASE_API_URL}/api/divisions`,
+}
+
 const OTHERS = {
     listPredictions: `${BASE_API_URL}/api/queries`
 }
@@ -28,5 +37,7 @@ export const API = {
     CLASSIFICATION,
     IMAGE,
     NLP,
+    APPOINTMENTS,
+    GEOGRAPHY,
     OTHERS
 }

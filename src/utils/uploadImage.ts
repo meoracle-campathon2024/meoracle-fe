@@ -69,7 +69,6 @@ export async function uploadImageFile(user: User, localFile: File): Promise<{
 
     const result = await uploadBytes(fileRef, localFile);
     const downloadUrl = await getDownloadURL(result.ref);
-    console.log(`downloadUrl=${downloadUrl}`);
     signOut(firebaseAuth);
     return {
         filePath: downloadUrl,

@@ -93,7 +93,7 @@ export default function MultiImageDropzoneUsage() {
         } finally {
             setPredicting(false);
         }
-    }, [auth, fileStates, updateFileProgress, predict, setDieases, setPredicting, setAlertQueryIsEmpty, updateFileProgress]);
+    }, [auth, fileStates, updateFileProgress, predict, setDieases, setPredicting, setAlertQueryIsEmpty]);
 
     return (
         <>
