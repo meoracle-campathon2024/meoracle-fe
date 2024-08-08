@@ -10,6 +10,7 @@ import { Appointment } from "@/interfaces/Appointment";
 import { useRouter } from "next/navigation";
 import { getAllAppointments } from "@/utils/backend";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/providers/AuthProvider";
 
 const ListAppointments = ({ appointments }: { appointments: Appointment[] }) => {
     const router = useRouter();
@@ -39,11 +40,13 @@ const ListAppointments = ({ appointments }: { appointments: Appointment[] }) => 
 }
 
 const Appointments: NextPage = () => {
+    const auth = useAuth();
     const [appointments, setAppointments] = useState<Appointment[]>([]);
 
     useEffect(() => {
+        if (!auth.authenticated) return;
         getAllAppointments().then(appointments => setAppointments(appointments));
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [auth]);
 
     return (
         <>

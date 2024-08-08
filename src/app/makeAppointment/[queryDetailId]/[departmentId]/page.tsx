@@ -14,6 +14,7 @@ import { Prediction } from "@/interfaces/Prediction";
 import { useRouter } from "next/navigation";
 import { PATH } from "@/config/path";
 import { SymptomsBox } from "@/components/SymptomBox";
+import { useAuth } from "@/providers/AuthProvider";
 
 const LOADING_TEXT = "...";
 
@@ -24,16 +25,19 @@ const MakeAppointment = ({ params: { queryDetailId, departmentId } }: {
     }
 }) => {
     const router = useRouter();
+    const auth = useAuth();
 
     const [department, setDepartment] = useState(null as Department | null);
 
     const [queryDetail, setQueryDetail] = useState(null as Prediction | null);
 
     useEffect(() => {
+        if (!auth.authenticated) return;
+
         getDepartmentById({ departmentId: +departmentId }).then(department => setDepartment(department));
 
         getQueryDetailById({ queryDetailId: +queryDetailId }).then(queryDetail => setQueryDetail(queryDetail));
-    }, [departmentId, queryDetailId]);
+    }, [auth, departmentId, queryDetailId]);
 
     // Your = User's
     const [yourName, setYourName] = useState("");
@@ -50,6 +54,11 @@ const MakeAppointment = ({ params: { queryDetailId, departmentId } }: {
         setYourDateOfBirthError(false);
         setYourEmailError(false);
         setYourPhoneNumberError(false);
+
+        if (!auth) {
+            console.log("unauthenticated");
+            return;
+        }
 
         if (!yourName) {
             setYourNameError(true);
@@ -85,7 +94,7 @@ const MakeAppointment = ({ params: { queryDetailId, departmentId } }: {
         });
 
         router.push(PATH.APPOINTMENT(appointment.id));
-    }, [router, yourName, yourDateOfBirth, yourEmail, yourPhoneNumber, departmentId, queryDetailId]);
+    }, [router, auth, yourName, yourDateOfBirth, yourEmail, yourPhoneNumber, departmentId, queryDetailId]);
 
     return (
         isNaN(+departmentId) || isNaN(+queryDetailId)

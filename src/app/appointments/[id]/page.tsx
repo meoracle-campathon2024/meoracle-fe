@@ -4,6 +4,7 @@ import PageTitle from "@/components/PageTitle";
 import { SymptomsBox } from "@/components/SymptomBox";
 import { PATH } from "@/config/path";
 import { Appointment } from "@/interfaces/Appointment";
+import { useAuth } from "@/providers/AuthProvider";
 import { getAppointmentById } from "@/utils/backend";
 import { Box, Button, TextField } from "@mui/material";
 import { DateField } from "@mui/x-date-pickers/DateField";
@@ -13,19 +14,22 @@ import { useEffect, useMemo, useState } from "react";
 
 const LOADING_TEXT = "...";
 
-export default function AppointmentPage({ params: { id } }: {
+export default function AppointmentPage({ params }: {
     params: {
         id: string,
     },
 }) {
     const router = useRouter();
+    const auth = useAuth();
 
     const [appointment, setAppointment] = useState<Appointment | null>(null);
     const [noSuchAppointment, setNoSuchAppointment] = useState(false);
 
     useEffect(() => {
-        getAppointmentById({ appointmentId: parseInt(id) }).then(appointment => setAppointment(appointment)).catch(() => setNoSuchAppointment(true));
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+        if (!auth.authenticated) return;
+        const appointmentId = params.id;
+        getAppointmentById({ appointmentId: parseInt(appointmentId) }).then(appointment => setAppointment(appointment)).catch(() => setNoSuchAppointment(true));
+    }, [auth, params]);
 
     const department = useMemo(() => appointment?.department || null, [appointment]);
     const queryDetail = useMemo(() => appointment?.query_detail || null, [appointment]);
