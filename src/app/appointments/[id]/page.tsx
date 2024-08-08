@@ -77,20 +77,20 @@ export default function AppointmentPage({ params }: {
                 >
                     <Box component="fieldset">
                         <legend>{"Appointment Information"}</legend>
-                        <DateField disabled label="Appointment Date" value={appointment ? dayjs.unix(appointment.created_at / 1000) : null} />
-                        <DateField disabled label="Scheduled Date" value={appointment ? dayjs.unix(appointment.scheduled_at / 1000) : null} />
+                        <DateField InputLabelProps={{ shrink: true }} inputProps={{ readOnly: true }} label="Appointment Date" value={appointment ? dayjs.unix(appointment.created_at / 1000) : null} />
+                        <DateField InputLabelProps={{ shrink: true }} inputProps={{ readOnly: true }} label="Scheduled Date" value={appointment ? dayjs.unix(appointment.scheduled_at / 1000) : null} />
                     </Box>
 
                     <Box component="fieldset">
                         <legend>{"Hospital and Department"}</legend>
 
-                        <TextField disabled InputLabelProps={{ shrink: true }} inputProps={{ readOnly: true }}
+                        <TextField InputLabelProps={{ shrink: true }} inputProps={{ readOnly: true }}
                             label="Hospital"
                             helperText={department ? department.hospital.full_address : ""}
                             value={department ? department.hospital.name : LOADING_TEXT}
                         />
 
-                        <TextField disabled InputLabelProps={{ shrink: true }} inputProps={{ readOnly: true }}
+                        <TextField InputLabelProps={{ shrink: true }} inputProps={{ readOnly: true }}
                             label="Department"
                             helperText={department ? department.specific_address : ""}
                             value={department ? department.name : LOADING_TEXT}
@@ -102,10 +102,14 @@ export default function AppointmentPage({ params }: {
                     <Box component="fieldset">
                         <legend>{"Your Personal Information"}</legend>
 
-                        <TextField disabled label="Name" value={yourName} />
-                        <DateField disabled label="Date of Birth" value={yourDateOfBirth} />
-                        <TextField disabled label="Email" value={yourEmail} />
-                        <TextField disabled label="Phone number" value={yourPhoneNumber} />
+                        <TextField InputLabelProps={{ shrink: true }} inputProps={{ readOnly: true }}
+                            label="Name" value={yourName} />
+                        <DateField InputLabelProps={{ shrink: true }} inputProps={{ readOnly: true }}
+                            label="Date of Birth" value={yourDateOfBirth} />
+                        <TextField InputLabelProps={{ shrink: true }} inputProps={{ readOnly: true }}
+                            label="Email" value={yourEmail} />
+                        <TextField InputLabelProps={{ shrink: true }} inputProps={{ readOnly: true }}
+                            label="Phone number" value={yourPhoneNumber} />
                     </Box>
                 </Box>
 

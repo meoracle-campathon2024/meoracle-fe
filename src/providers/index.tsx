@@ -21,6 +21,6 @@ export function AllProviders({ children }: {
                     {children}
                 </AppRouterCacheProvider>
             </ThemeProvider>
-            </LocalizationProvider>
+        </LocalizationProvider>
     );
 }

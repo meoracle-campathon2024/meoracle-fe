@@ -4,8 +4,9 @@ import { Prediction } from "@/interfaces/Prediction";
 import { Box, TextField } from "@mui/material";
 import classNames from "classnames";
 
-export function SymptomsBox({ queryDetail }: {
+export function SymptomsBox({ queryDetail, disabled }: {
     queryDetail: Prediction | null,
+    disabled?: boolean|undefined,
 }) {
     return <>
         <Box component="fieldset">
@@ -36,11 +37,16 @@ export function SymptomsBox({ queryDetail }: {
                             />;
                         })
                     }</>
-                    : <>
-                        <TextField fullWidth multiline rows={4} id="outlined-basic" variant="outlined" className="max-w-[500px]">
-                            {queryDetail.query_content}
-                        </TextField>
-                    </>
+                    : <div className="w-full relative">
+                        <TextField
+                            disabled={disabled}
+                            InputLabelProps={{ shrink: true }} inputProps={{ readOnly: true }}
+                            multiline rows={4}
+                            variant="outlined"
+                            fullWidth
+                            value={queryDetail.query_content}
+                        />
+                    </div>
                 }</>
             }
         </Box>

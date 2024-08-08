@@ -8,8 +8,6 @@ import { useCallback, useEffect, useState } from "react";
 
 import { DateField } from '@mui/x-date-pickers/DateField';
 import { Dayjs } from 'dayjs';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
 import { Prediction } from "@/interfaces/Prediction";
 import { useRouter } from "next/navigation";
 import { PATH } from "@/config/path";
@@ -99,7 +97,7 @@ const MakeAppointment = ({ params: { queryDetailId, departmentId } }: {
     return (
         isNaN(+departmentId) || isNaN(+queryDetailId)
         ? <>Page Not Found</>
-        : <LocalizationProvider dateAdapter={AdapterDayjs}>
+        : <>
             <PageTitle title={"Make Appointment"} />
 
             <Box
@@ -127,7 +125,7 @@ const MakeAppointment = ({ params: { queryDetailId, departmentId } }: {
                     />
                 </Box>
 
-                <SymptomsBox queryDetail={queryDetail} />
+                <SymptomsBox queryDetail={queryDetail} disabled />
 
                 <Box component="fieldset">
                     <legend>{"Your Personal Information"}</legend>
@@ -142,7 +140,7 @@ const MakeAppointment = ({ params: { queryDetailId, departmentId } }: {
                     <Button variant="contained" onClick={() => callMakeAppointment()}>{"Make Appointment"}</Button>
                 </Box>
             </Box>
-        </LocalizationProvider>
+        </>
     );
 };
 
