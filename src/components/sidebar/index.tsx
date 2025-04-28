@@ -77,7 +77,7 @@ const Sidebar = ({ className }: { className?: string }) => {
                         <span className="inline-flex justify-center items-center ml-4">
                             <MarkChatReadIcon />
                         </span>
-                        <span className="ml-2 tracking-wide truncate">NLP Predict</span>
+                        <span className="ml-2 tracking-wide truncate">Chat Predict</span>
                     </LinkToPage>
 
                     <Divider />

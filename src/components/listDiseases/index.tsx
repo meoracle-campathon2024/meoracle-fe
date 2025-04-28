@@ -292,39 +292,68 @@ const ListDieases = ({ dieases, queryDetail }: { dieases: Disease[], queryDetail
     const diseaseListRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
-        if (dieases.length > 0) {
-            if (diseaseListRef && diseaseListRef.current) {
-                diseaseListRef.current.scrollIntoView({
-                    behavior: 'smooth',
-                });
-            }
+        if (dieases.length > 0 && diseaseListRef.current) {
+            diseaseListRef.current.scrollIntoView({
+                behavior: 'smooth',
+            });
         }
     }, [dieases]);
-
 
     const [isAppointmentSuggestionsDialogOpen, setIsAppointmentSuggestionsDialogOpen] = useState(false);
 
     const makeAppointment = useCallback(() => {
         setIsAppointmentSuggestionsDialogOpen(true);
-    }, [setIsAppointmentSuggestionsDialogOpen]);
+    }, []);
 
     return (
-        !dieases.length || null === queryDetail
+        !dieases.length || queryDetail === null
         ? <></>
         : <div className="mt-5">
-            <div className="flex justify-between justify-items-center">
-                <h1 className="font-bold">TOP DISEASES</h1>
-                <Button onClick={() => makeAppointment()}>MAKE APPOINTMENT</Button>
+            <div className="flex justify-between items-center">
+                <h1 className="font-bold text-lg">TOP DISEASES</h1>
+                <Button onClick={makeAppointment}>MAKE APPOINTMENT</Button>
             </div>
 
             <div ref={diseaseListRef}>
                 <List>
-                    {dieases.map((diease, key) => (
-                        <ListItem key={key} disablePadding className={"hover:bg-gray-200 p-2"}>
-                            <ListItemIcon>
-                                <CoronavirusIcon />
-                            </ListItemIcon>
-                            <ListItemText primary={diease.disease_name} />
+                    {dieases.map((disease, index) => (
+                        <ListItem
+                            key={index}
+                            className="flex flex-col items-start border-b border-gray-200 py-3 px-2"
+                            alignItems="flex-start"
+                        >
+                            <div className="flex items-center mb-1 w-full">
+                                <ListItemIcon className="min-w-[30px]">
+                                    <CoronavirusIcon />
+                                </ListItemIcon>
+                                <span className="font-semibold text-base">{disease.disease_name}</span>
+                            </div>
+
+                            {disease.explanation && (
+                                <div className="pl-[38px] mb-1 text-sm text-gray-700 w-full">
+                                    <span className="font-medium">Giải thích:</span> {disease.explanation}
+                                </div>
+                            )}
+
+                            {disease.references && disease.references.length > 0 && (
+                                <div className="pl-[38px] mt-1 text-sm text-gray-600 w-full">
+                                    <span className="font-medium">Nguồn tham khảo:</span>
+                                    <ul className="list-disc list-inside mt-1">
+                                        {disease.references.map((ref, i) => (
+                                            <li key={i}>
+                                                <a
+                                                    href={ref}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-600 hover:underline"
+                                                >
+                                                    {ref}
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
                         </ListItem>
                     ))}
                 </List>
@@ -336,7 +365,7 @@ const ListDieases = ({ dieases, queryDetail }: { dieases: Disease[], queryDetail
                 queryDetail={queryDetail}
             />
         </div>
-    )
-}
+    );
+};
 
-export default ListDieases
+export default ListDieases;

@@ -36,6 +36,7 @@ const NlpPredict: NextPage = () => {
 
             const { query_detail, detected_diseases } = await nlpPredict(query);
             setDieases(detected_diseases);
+            console.log(dieases)
             setQueryDetail({ ...query_detail });
         } finally {
             setPredicting(false)
@@ -44,7 +45,7 @@ const NlpPredict: NextPage = () => {
 
     return (
         <>
-            <PageTitle title={"NLP PREDICT"} />
+            <PageTitle title={"Chat Predict"} />
             <div className="flex items-center max-w-[500px]">
                 <Image
                     src="/nlpPredict.png"

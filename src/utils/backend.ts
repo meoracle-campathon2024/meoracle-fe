@@ -5,11 +5,13 @@ import { Appointment } from "@/interfaces/Appointment";
 import { Coordinates } from "@/interfaces/Coordinates";
 import { Country } from "@/interfaces/Country";
 import { Department } from "@/interfaces/Department";
+import { Disease } from "@/interfaces/Disease";
 import { Division } from "@/interfaces/Division";
 import { Prediction } from "@/interfaces/Prediction";
 import { PredictionResult } from "@/interfaces/PredictionResult";
 import { QueryDetail } from "@/interfaces/QueryDetail";
 import axios from "axios";
+import OpenAI from "openai";
 
 // export async function choicePredict(): Promise<Disease[]> {
 //     return [
@@ -31,6 +33,10 @@ import axios from "axios";
 //     ]
 // }
 
+const client = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY, dangerouslyAllowBrowser: true,
+});
+
 export async function classificationPredict(selectedSymptomsIds: number[]): Promise<PredictionResult> {
     const res = await axios.post(API.CLASSIFICATION.predict, {
         selected_classification_symptom_ids: selectedSymptomsIds,
@@ -40,17 +46,75 @@ export async function classificationPredict(selectedSymptomsIds: number[]): Prom
     return res.data;
 }
 
-export async function imagePredict(uploadedFilePaths:string[]): Promise<PredictionResult> {
-    const res = await axios.post(API.IMAGE.predict, {uploaded_file_paths: uploadedFilePaths}, {withCredentials: true}) 
-    return res.data 
-}
-
-export async function nlpPredict(query: string): Promise<PredictionResult> {
-    const res = await axios.post(API.NLP.predict, {query_content: query}, {withCredentials: true})
+export async function imagePredict(uploadedFilePaths: string[]): Promise<PredictionResult> {
+    const res = await axios.post(API.IMAGE.predict, { uploaded_file_paths: uploadedFilePaths }, { withCredentials: true })
     return res.data
 }
 
-export async function getAppointmentSuggestions(queryDetail: QueryDetail, location: Coordinates|null): Promise<AppointmentSuggestion[]> {
+export async function nlpPredict(query: string): Promise<PredictionResult> {
+    const now = Date.now();
+
+    const systemPrompt = `
+Bạn là một hệ thống có khả năng chẩn đoán bệnh dựa trên triệu chứng của người dùng.
+Trả lời dưới dạng JSON theo cấu trúc sau (không cần giải thích gì thêm ngoài JSON):
+
+{
+  "detected_diseases": [
+    {
+      "disease_name": string,
+      "explanation": string, // giải thích lý do vì sao lại chẩn đoán bệnh này từ triệu chứng
+      "references": [string] // danh sách nguồn tài liệu uy tín, link web hoặc tên sách
+    }
+  ]
+}
+
+Không bao giờ trả lời khác ngoài JSON. Nếu không chẩn đoán được bệnh thì trả mảng rỗng.
+Luôn nhắc nhở người dùng rằng đây chỉ là dự đoán sơ bộ, không thay thế cho thăm khám y tế.
+`;
+
+    const completion = await client.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: query },
+        ],
+        temperature: 0.7,
+    });
+
+    const content = completion.choices[0].message.content || "{}";
+
+    let detected: any[] = [];
+
+    try {
+        const parsed = JSON.parse(content);
+        if (Array.isArray(parsed.detected_diseases)) {
+            detected = parsed.detected_diseases;
+        }
+    } catch (error) {
+        console.error("Lỗi khi parse JSON từ GPT:", error);
+    }
+
+    // Chuyển đổi mảng bệnh GPT trả về -> dạng Disease[]
+    const detectedDiseases: Disease[] = detected.map((disease, index) => ({
+        id: index + 1,
+        disease_name: disease.disease_name || "Không rõ",
+        created_at: now,
+        explanation: disease.explanation || "",
+        references: Array.isArray(disease.references) ? disease.references : [],
+    }));
+
+    const query_detail: QueryDetail = {
+        id: Math.floor(Math.random() * 100000),
+        created_at: now,
+    };
+
+    return {
+        query_detail,
+        detected_diseases: detectedDiseases,
+    };
+}
+
+export async function getAppointmentSuggestions(queryDetail: QueryDetail, location: Coordinates | null): Promise<AppointmentSuggestion[]> {
     const res = await axios.get(
         API.APPOINTMENTS.suggestions + `?query_detail_id=${queryDetail.id}` + (
             null === location ? "" : `&lat=${location.lat}&lon=${location.lon}`
@@ -68,7 +132,7 @@ export async function getCountries(): Promise<Country[]> {
     return res.data;
 }
 
-export async function getDivisions({ countryId } : {
+export async function getDivisions({ countryId }: {
     countryId: number,
 }): Promise<Division[]> {
     const res = await axios.get(
@@ -78,7 +142,7 @@ export async function getDivisions({ countryId } : {
     return res.data;
 }
 
-export async function getDepartmentById({ departmentId } : {
+export async function getDepartmentById({ departmentId }: {
     departmentId: number,
 }): Promise<Department> {
     const res = await axios.get(
@@ -88,7 +152,7 @@ export async function getDepartmentById({ departmentId } : {
     return (res.data as Department[])[0];
 }
 
-export async function getQueryDetailById({ queryDetailId } : {
+export async function getQueryDetailById({ queryDetailId }: {
     queryDetailId: number,
 }): Promise<Prediction> {
     const res = await axios.get(
@@ -116,7 +180,7 @@ export async function makeAppointment({ departmentId, queryDetailId, note }: {
     return res.data as Appointment;
 }
 
-export async function getAppointmentById({ appointmentId } : {
+export async function getAppointmentById({ appointmentId }: {
     appointmentId: number,
 }): Promise<Appointment> {
     const res = await axios.get(

@@ -108,6 +108,7 @@ export default function ChoiceSelector() {
     }, [_real_setDisplayedError]);
 
     useEffect(() => {
+        console.log("auth.authenticated:", auth.authenticated);
         if (!auth.authenticated) return;
 
         fetch(API.CLASSIFICATION.symtoms, {
@@ -119,7 +120,10 @@ export default function ChoiceSelector() {
             if (status !== 200) {
                 throw new Error(`server returned ${status}, error ${data?.message || "" + data}`);
             }
-            const symptomGroups_ = data as SymptomGroupWithChildren[];
+            const symptomGroups_: SymptomGroupWithChildren[] = (data as SymptomGroupWithChildren[]).map(group => ({
+                ...group,
+                subgroups: []
+              }));
             setSymptomGroups(symptomGroups_);
         }).catch(e => {
             throw e;
